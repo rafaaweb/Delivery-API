@@ -1,0 +1,100 @@
+openapi: 3.0.3
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  description: |-
+    This is a contract api to describe the resources available by the Product API
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: luizcantrella@swagger.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: https://localhost:8080/api-delivery/v1
+tags:
+  - name: delivery
+    description: Everything about your Delivery
+  - name: andress
+    description: Everything about the andress in system
+paths:
+  /delivery/{deliveryId}:
+    post:
+      tags:
+        - delivery
+      summary: Create a new delivery
+      description: Create a new delivery
+      operationId: addDelivery
+      requestBody:
+        description: Create a new delivery
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeliveryRequestDTO'
+        required: true
+      responses:
+        '201':
+          description: Delivery created successfully
+          headers:
+            Location:
+              schema:
+                type: string
+              description: The URL of the created resource
+              example: http://deliveryapi.com/api/v1/deliverys/10
+        '404':
+          description: Andress not found
+        '405':
+          description: Invalid input
+components:
+  schemas:
+    Id:
+      type: integer
+      format: int64
+    DeliveryRequestDTO:
+      required:
+        - andressId
+        - id
+        - street
+        - number
+        - postalCode
+        - complement
+        - state
+        - city
+        - country
+      type: object
+      properties:
+        andressId:
+          type: integer
+          description: A valid id that represents a andress in the system
+          example: 4
+        street:
+          type: string
+          description: The name of street in the andress
+          example: Groove St.
+        number:
+          type: integer
+          description: The number of the andress
+          example: 1234
+        postalCode:
+          type: integer
+          description: Postal Code of the andress
+          example: 12345678
+        complement:
+          type: string
+          description: Complement of the andress
+          example: Back house
+        state:
+          type: string
+          description: State of the andress
+          example: São paulo
+        city:
+          type: string
+          description: City of the andress
+          example: Araraquara
+        country:
+          type: string
+          description: Country of the andress
+          example: Brazil            
