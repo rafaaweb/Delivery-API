@@ -18,10 +18,8 @@ servers:
 tags:
   - name: delivery
     description: Everything about your Delivery
-  - name: andress
-    description: Everything about the andress in system
 paths:
-  /delivery/{deliveryId}:
+  /delivery:
     post:
       tags:
         - delivery
@@ -45,18 +43,79 @@ paths:
               description: The URL of the created resource
               example: http://deliveryapi.com/api/v1/deliverys/10
         '404':
-          description: Andress not found
+          description: address not found
         '405':
           description: Invalid input
+    get:
+      tags:
+        - delivery 
+      summary: List all deliveries
+      description: List all deliveries
+      operationId: listAllDelivery
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageableDelivery'
+  /delivery/{deliveryId}:
+    patch:
+      tags:
+        - delivery
+      summary: Update delivery status
+      description: Update delivery status
+      operationId: updateDelivery
+      parameters:
+        - name: deliveryId
+          in: path
+          description: Id of delivery to update
+          required: true
+          schema:
+            type: integer
+            format: int64 
+      requestBody:
+        description: Update delivery status
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StatusDTO'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeliveryResponseDTO'
+    get:
+      tags:
+        - delivery
+      summary: Get a delivery
+      description: Get a delivery
+      operationId: getDelivery
+      parameters:
+        - name: deliveryId
+          in: path
+          description: Id of delivery to update
+          required: true
+          schema:
+            type: integer
+            format: int64 
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeliveryResponseDTO'
 components:
   schemas:
     Id:
       type: integer
       format: int64
-    DeliveryRequestDTO:
+    AddressDTO:
       required:
-        - andressId
-        - id
         - street
         - number
         - postalCode
@@ -66,35 +125,112 @@ components:
         - country
       type: object
       properties:
-        andressId:
-          type: integer
-          description: A valid id that represents a andress in the system
-          example: 4
         street:
           type: string
-          description: The name of street in the andress
+          description: The name of street in the address
           example: Groove St.
         number:
           type: integer
-          description: The number of the andress
+          description: The number of the address
           example: 1234
         postalCode:
           type: integer
-          description: Postal Code of the andress
+          description: Postal Code of the address
           example: 12345678
         complement:
           type: string
-          description: Complement of the andress
+          description: Complement of the address
           example: Back house
         state:
           type: string
-          description: State of the andress
+          description: State of the address
           example: São paulo
         city:
           type: string
-          description: City of the andress
+          description: City of the address
           example: Araraquara
         country:
           type: string
-          description: Country of the andress
-          example: Brazil            
+          description: Country of the address
+          example: Brazil  
+    DeliveryRequestDTO:
+      type: object
+      properties:
+        orderId:
+          type: integer
+          format: int64
+        address:
+          $ref: '#/components/schemas/AddressDTO'
+    SimpleDeliveryResponseDTO:
+      type: object
+      properties:
+        deliveryId:
+          type: integer
+          format: int64
+        orderId:
+          type: integer
+          format: int64
+        status:
+          type: string
+    StatusDTO:
+      type: object
+      properties:
+        newStatus:
+          type: string
+    DeliveryResponseDTO:
+      allOf:
+        - $ref: '#/components/schemas/SimpleDeliveryResponseDTO'
+        - type: object
+          properties:
+            address:
+              $ref: '#/components/schemas/AddressDTO'
+    PageableTemplate:
+      description: Pageable template
+      type: object
+      properties:
+        'pageable':
+          type: object
+          properties:
+            'moreElements':
+              type: boolean
+              description: Has more elements that were not returned
+            'pageNumber':
+              type: integer
+              format: int64
+          required:
+            - 'moreElements'
+        'content':
+          type: array
+          minItems: 0
+          maxItems: 50
+          items:
+            type: object
+      required:
+        - 'pageable'
+        - 'content'
+    PageableDelivery:
+      description: A pageable of deliveries
+      allOf:
+        - $ref: '#/components/schemas/PageableTemplate'
+        - type: object
+          properties:
+            'content':
+              type: array
+              items:
+                allOf:
+                  - $ref: '#/components/schemas/SimpleDeliveryResponseDTO'
+                  - type: object
+                    required:
+                      - deliveryId
+                      - orderId
+                      - status
+                  
+                                 
+                  
+    
+
+            
+                      
+      
+      
+                        
